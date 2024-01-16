@@ -33,3 +33,21 @@ ORDER BY salary DESC
 LIMIT 1;
 
 SELECT*FROM top_paid_employee;
+
+
+-- Problem 5: Select Employees by Multiple Filters
+-- Write a query to retrieve information about employees, who are in department 4 and has a salary higher or equal to 1000. Order the information by id.
+
+SELECT id,first_name,last_name,job_title,department_id, salary 
+FROM employees
+WHERE salary >= 1000 AND department_id=4
+ORDER BY id ASC;
+
+-- Problem 6: Delete from Table
+-- Write a query to delete all employees from the "employees" table who are in department 2 or 1. Then select all from table `employees` and order the information by id
+
+DELETE FROM employees
+where department_id=1 OR department_id=2;
+
+SELECT*FROM employees
+ORDER BY id ASC;

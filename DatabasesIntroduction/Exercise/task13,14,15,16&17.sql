@@ -110,17 +110,17 @@ address_id
 -- ·departments – name
 -- ·employees – first_name, last_name, job_title, salary
 
-SELECT DISTINCT name FROM towns
+SELECT name FROM towns
 ORDER BY name ASC;
 
-SELECT DISTINCT name FROM departments
+SELECT  name FROM departments
 ORDER BY name ASC;
 
-SELECT DISTINCT first_name, last_name, job_title, salary FROM employees
+SELECT first_name, last_name, job_title, salary FROM employees
 ORDER BY salary DESC;
 
 -- 17. Increase Employees Salary 
 UPDATE employees
 SET  salary = salary * 1.1;
 
-SELECT DISTINCT salary FROM employees;
+SELECT  salary FROM employees;
