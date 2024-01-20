@@ -90,4 +90,5 @@ ORDER BY mix;
 
 SELECT name, DATE_FORMAT(start,'%Y-%m-%d') AS 'start'FROM games
 WHERE DATE_FORMAT(start,'%Y') IN (2011,2012)
-ORDER BY start;
+ORDER BY DATE_FORMAT(start,'%Y-%m-%d')
+LIMIT 50;
