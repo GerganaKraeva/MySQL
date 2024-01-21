@@ -4,6 +4,7 @@
 
 SELECT first_name, last_name FROM employees
 WHERE SUBSTRING(first_name, 1,2)='Sa'
+-- WHERE first_name LIKE 'Sa%'
 ORDER BY employee_id;
 
 -- 2. Find Names of All Employees by Last Name
@@ -19,7 +20,9 @@ ORDER BY employee_id;
 -- between 1995 and 2005 inclusively. Order the information by id.
 
 SELECT first_name FROM employees
-WHERE department_id IN(3,10) AND DATE_FORMAT(hire_date,'%Y') BETWEEN 1995 AND 2005
+WHERE department_id IN(3,10) AND 
+DATE_FORMAT(hire_date,'%Y') BETWEEN 1995 AND 2005
+--  YEAR(hire_date,) BETWEEN 1995 AND 2005
 ORDER BY employee_id;
 
 -- 4. Find All Employees Except Engineers
@@ -28,6 +31,7 @@ ORDER BY employee_id;
 
 SELECT first_name, last_name FROM employees
 WHERE LOCATE ('engineer' , job_title) = 0
+-- WHERE job_title NOT LIKE'%engineer%'
 ORDER BY employee_id;
 
 -- 5. Find Towns with Name Length
@@ -43,6 +47,7 @@ ORDER BY `name`;
 
 SELECT town_id,`name` FROM towns
 WHERE `name` REGEXP '^[M,K,B,E]'
+-- WHERE LEFT(name,1) IN ('M','K','B','E')
 ORDER BY `name`;
 
 -- 7. Find Towns Not Starting With
@@ -51,6 +56,7 @@ ORDER BY `name`;
 
 SELECT town_id,`name` FROM towns
 WHERE `name` REGEXP '^[^R,B,D]'
+-- WHERE LEFT(name,1) NOT IN ('R','B','D')
 ORDER BY `name`;
 
 -- 8. Create View Employees Hired After 2000 Year
@@ -71,9 +77,9 @@ WHERE CHAR_LENGTH(last_name)=5;
 -- Find all countries that hold the letter 'A' in their name at least 3 times (case insensitively), sorted by ISO code. 
 -- Display the country name and the ISO code.
 
-
-
-
+SELECT  country_name, iso_code FROM countries
+WHERE  country_name LIKE '%A%A%A%'
+ORDER BY iso_code;
 
 -- 11. Mix of Peak and River Names
 -- Combine all peak names with all river names, so that the last letter of each peak name is the same as the first letter 
@@ -89,6 +95,6 @@ ORDER BY mix;
 -- Display the start date in the format "YYYY-MM-DD".
 
 SELECT name, DATE_FORMAT(start,'%Y-%m-%d') AS 'start'FROM games
-WHERE DATE_FORMAT(start,'%Y') IN (2011,2012)
+WHERE YEAR(start) IN (2011,2012)
 ORDER BY DATE_FORMAT(start,'%Y-%m-%d')
 LIMIT 50;
