@@ -98,3 +98,38 @@ SELECT name, DATE_FORMAT(start,'%Y-%m-%d') AS 'start'FROM games
 WHERE YEAR(start) IN (2011,2012)
 ORDER BY DATE_FORMAT(start,'%Y-%m-%d')
 LIMIT 50;
+
+-- 13. User Email Providers
+-- Find information about the email providers of all users. Display the user_name and the email provider. Sort the 
+-- results by email provider alphabetically, then by username.
+
+SELECT user_name, SUBSTRING(email, LOCATE('@',email)+1) AS 'email_provider' FROM users
+ORDER BY email_provider, user_name;
+
+-- 14. Get Users with IP Address Like Pattern
+-- Find the user_name and the ip_address for each user, sorted by user_name alphabetically. Display only the rows, 
+-- where the ip_address matches the pattern: "___.1%.%.___".
+
+SELECT user_name, ip_address FROM users
+WHERE ip_address LIKE '___.1%.%.___'
+ORDER BY user_name;
+
+-- 15. Show All Games with Duration and Part of the Day
+-- Find all games with their corresponding part of the day and duration. Parts of the day should be Morning (start
+-- time is >= 0 and < 12), Afternoon (start time is >= 12 and < 18), Evening (start time is >= 18 and < 24). Duration
+-- should be Extra Short (smaller or equal to 3), Short (between 3 and 6 including), Long (between 6 and 10 including) 
+-- and Extra Long in any other cases or without duration. Submit your query statements as Prepare DB & run queries.
+
+SELECT name AS game,
+CASE
+    WHEN HOUR(start) < 12 THEN 'Morning'
+    WHEN HOUR(start) < 18 THEN 'Afternoon'
+    WHEN HOUR(start) < 24 THEN 'Evening'
+END AS 'Part of the Day',
+CASE
+    WHEN duration < 4 THEN 'Extra Short'
+    WHEN duration < 7 THEN 'Short'
+    WHEN duration < 11 THEN 'Long'
+    ELSE 'Extra Long'
+END AS 'Duration'
+FROM games;
