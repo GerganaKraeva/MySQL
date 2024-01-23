@@ -78,7 +78,6 @@ ORDER BY magic_wand_creator,deposit_group;
 -- • Count of wizards in it
 -- Sort result by increasing size of age groups.
 
-
 SELECT 
     CASE
         WHEN age < 11 THEN '[0-10]'
@@ -93,3 +92,61 @@ SELECT
 FROM wizzard_deposits
 GROUP BY age_group
 ORDER BY `wizzard_count`;
+
+
+-- 10. First Letter
+-- Write a query that returns all unique wizard first letters of their first names only if they have deposit of type Troll Chest. Order them alphabetically. Use GROUP BY for uniqueness.
+
+SELECT LEFT(first_name, 1) AS `first_letter`
+FROM wizzard_deposits
+WHERE deposit_group = 'Troll Chest'
+GROUP BY `first_letter`
+ORDER BY `first_letter`;
+
+-- 11. Average Interest
+-- Mr. Bodrog is highly interested in profitability. He wants to know the average interest of all deposits groups split by whether 
+-- the deposit has expired or not. But that's not all. He wants you to select deposits with start date after 01/01/1985.
+--  Order the data descending by Deposit Group and ascending by Expiration Flag
+
+SELECT deposit_group, is_deposit_expired, ROUND(AVG(deposit_interest),6) AS `average_interest`
+FROM wizzard_deposits
+WHERE deposit_start_date >'1985-01-01'
+GROUP BY deposit_group, is_deposit_expired
+ORDER BY deposit_group DESC, is_deposit_expired;
+
+
+-- 12. Employees Minimum Salaries
+-- That's it! You no longer work for Mr. Bodrog. You have decided to find a proper job as an analyst in SoftUni.
+-- It's not a surprise that you will use the soft_uni database.
+-- Select the minimum salary from the employees for departments with ID (2,5,7) but only for those who are hired after 01/01/2000. Sort result by department_id in ascending order.
+-- Your query should return:
+-- • department_id
+
+SELECT department_id , MIN(salary) AS `minimum_salary`
+FROM employees
+WHERE  hire_date >'2000-01-01'
+GROUP BY department_id
+HAVING department_id IN(2,5,7)
+ORDER BY department_id;
+
+-- 13. Employees Average Salaries
+-- Select all high paid employees who earn more than 30000 into a new table.
+--  Then delete all high paid employees who have manager_id = 42 from the new table. 
+--  Then increase the salaries of all high paid employees with department_id = 1 with 5000 in the new table.
+--  Finally, select the average salaries in each department from the new table. Sort result by department_id in increasing order.
+
+CREATE TABLE highest_paid_employees
+SELECT*FROM employees
+WHERE salary >30000;
+
+DELETE FROM highest_paid_employees
+WHERE manager_id=42;
+-- SET SQL_SAFE_UPDATES = 0;
+
+UPDATE highest_paid_employees 
+SET salary = salary + 5000
+WHERE department_id =  1;
+
+SELECT department_id, AVG(salary) AS `avg_salary` FROM highest_paid_employees
+GROUP BY department_id
+ORDER BY department_id;
