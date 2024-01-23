@@ -20,6 +20,10 @@ ORDER BY `longest_magic_wand`, deposit_group;
 -- 4. Smallest Deposit Group Per Magic Wand Size*
 -- Select the deposit group with the lowest average wand size.
 
+SELECT deposit_group FROM wizzard_deposits
+GROUP BY deposit_group
+LIMIT 1;
+
 -- 5. Deposits Sum
 -- Select all deposit groups and its total deposit sum. Sort result by total_sum in increasing order.
 
@@ -73,3 +77,19 @@ ORDER BY magic_wand_creator,deposit_group;
 -- • Age groups
 -- • Count of wizards in it
 -- Sort result by increasing size of age groups.
+
+
+SELECT 
+    CASE
+        WHEN age < 11 THEN '[0-10]'
+        WHEN age < 21 THEN '[11-20]'
+        WHEN age < 31 THEN '[21-30]'
+        WHEN age < 41 THEN '[31-40]'
+        WHEN age < 51 THEN '[41-50]'
+        WHEN age < 61 THEN '[51-60]'
+        WHEN age >= 61 THEN '[61+]'
+    END AS age_group,
+    COUNT(*) as `wizzard_count`
+FROM wizzard_deposits
+GROUP BY age_group
+ORDER BY `wizzard_count`;
