@@ -150,3 +150,30 @@ WHERE department_id =  1;
 SELECT department_id, AVG(salary) AS `avg_salary` FROM highest_paid_employees
 GROUP BY department_id
 ORDER BY department_id;
+
+
+-- 14. Employees Maximum Salaries
+-- Find the max salary for each department. Filter those which have max salaries not in the range 30000 and 70000. 
+-- Sort result by department_id in increasing order.
+
+SELECT department_id, MAX(salary) AS `max_salary` FROM employees
+GROUP BY department_id
+HAVING `max_salary` NOT BETWEEN 30000 AND 70000
+ORDER BY department_id;
+
+-- 15. Employees Count Salaries
+-- Count the salaries of all employees who don't have a manager.
+
+SELECT COUNT(employee_id) AS `` 
+FROM employees
+WHERE manager_id IS  NULL;
+
+-- 18. Departments Total Salaries
+-- Create a query which shows the total sum of salaries for each department. Order by department_id.
+-- Your query should return:
+-- • department_id
+
+SELECT department_id, SUM(salary) AS `total_salary`
+FROM employees
+GROUP BY department_id
+ORDER BY department_id;
