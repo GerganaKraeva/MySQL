@@ -179,6 +179,26 @@ GROUP BY department_id
 HAVING `third_highest_salary` IS NOT NULL
 ORDER BY department_id;
 
+-- 17. Salary Challenge**
+-- Write a query that returns:
+-- • first_name
+-- • last_name
+-- • department_id
+-- for all employees who have salary higher than the average salary of their respective departments. 
+-- Select only the first 10 rows. Order by department_id, employee_id.
+SELECT 
+    first_name, last_name, department_id
+FROM
+    employees e
+WHERE
+    salary > (SELECT 
+            AVG(salary)
+        FROM
+            employees
+        WHERE
+            department_id = e.department_id)
+ORDER BY department_id , employee_id
+LIMIT 10;
 
 -- 18. Departments Total Salaries
 -- Create a query which shows the total sum of salaries for each department. Order by department_id.
