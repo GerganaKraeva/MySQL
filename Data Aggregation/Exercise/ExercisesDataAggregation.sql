@@ -167,6 +167,18 @@ ORDER BY department_id;
 SELECT COUNT(employee_id) AS `` 
 FROM employees
 WHERE manager_id IS  NULL;
+-- 16. 3rd Highest Salary*
+-- Find the third highest salary in each department if there is such. Sort result by department_id in increasing order.
+
+SELECT department_id, (SELECT  DISTINCT salary FROM employees
+					WHERE e.department_id = department_id
+					ORDER BY salary DESC
+					LIMIT 1 OFFSET 2) AS `third_highest_salary`
+ FROM employees e
+GROUP BY department_id
+HAVING `third_highest_salary` IS NOT NULL
+ORDER BY department_id;
+
 
 -- 18. Departments Total Salaries
 -- Create a query which shows the total sum of salaries for each department. Order by department_id.
