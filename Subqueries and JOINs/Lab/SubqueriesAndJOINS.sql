@@ -35,3 +35,10 @@ WHERE manager_id IS NULL;
 
 -- 4. Higher Salary
 -- Write a query to count the number of employees who receive salary higher than the average.
+
+-- 4. Higher Salary
+-- Write a query to count the number of employees who receive salary higher than the average.
+
+SELECT COUNT(employee_id) AS 'count'
+FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
