@@ -26,4 +26,30 @@ INSERT INTO people (first_name, salary, passport_id) VALUES
 ('Tom', 56100.00,103),
 ('Yana', 60200.00,101);
 
+    payment_amount DECIMAL(8,2),
+    student_id INT,
+    FOREIGN KEY (student_id)
+    REFERENCES students(student_id)
+);
+
+CREATE TABLE agenda (
+    student_id INT(11),
+    subject_id INT(11),
+    PRIMARY KEY (student_id, subject_id),
+    FOREIGN KEY (student_id)
+    REFERENCES students(student_id),
+    FOREIGN KEY (subject_id)
+    REFERENCES subjects(subject_id)
+);
+-- 9. Peaks in Rila
+USE geography;
+
+SELECT m.mountain_range, p.peak_name, p.elevation AS `peak_elevation`FROM peaks p
+JOIN mountains m
+ON p.mountain_id = m.id
+WHERE m.mountain_range = 'Rila'
+ORDER BY p.elevation DESC;
+
+
+
 
