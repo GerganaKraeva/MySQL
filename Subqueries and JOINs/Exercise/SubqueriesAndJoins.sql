@@ -106,7 +106,6 @@ WHERE DATE(pr.start_date) > '2002-08-13'  AND  pr.end_date IS NULL
 ORDER BY e.first_name, pr.name
 LIMIT 5;
 
-
 -- 8. Employee 24
 -- Write a query that selects:
 -- · employee_id
@@ -116,6 +115,48 @@ LIMIT 5;
 --  If the project has started after 2005 inclusively the return value should be NULL.
 --  Sort the result by project_name alphabetically.
 
+SELECT e.employee_id, e.first_name,
+IF (YEAR(pr.start_date)>=2005, NULL,pr.name) AS 'project_name'
+FROM employees AS e
+  JOIN employees_projects AS ep
+  ON e.employee_id=ep.employee_id
+  JOIN projects AS pr 
+ ON pr.project_id=ep.project_id
+WHERE e.employee_id = 24
+ORDER BY pr.name;
 
+-- 9. Employee Manager
+-- Write a query that selects:
+-- · employee_id
+-- · first_name
+-- · manager_id
+-- · manager_name
+-- Filter all employees with a manager who has id equal to 3 or 7. 
+-- Return all rows sorted by employee first_name in ascending order.
+
+SELECT e.employee_id,
+ e.first_name,
+ e.manager_id,
+ m.first_name AS 'manager_id'
+ FROM employees AS e
+ JOIN employees AS m
+ ON e.manager_id = m.employee_id
+ WHERE e.manager_id IN (3, 7)
+ORDER BY e.first_name;
+
+
+-- 10. Employee Summary
+-- Write a query that selects:
+-- · employee_id
+-- · employee_name
+-- · manager_name
+-- · department_name
+-- Show the first 5 employees (only for employees who have a manager) 
+-- with their managers and the departments they are in (show the departments of the employees). Order by employee_id.
+
+SELECT e.employee_id,
+CONCAT( e.first_name,' ',e.last_name) AS 'employee_name',
+CONCAT(m.first_name,' ', m.last_name) AS 'manager_name',
+d.name AS 'department_name'
 
 
