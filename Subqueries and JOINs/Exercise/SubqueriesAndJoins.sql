@@ -158,5 +158,80 @@ SELECT e.employee_id,
 CONCAT( e.first_name,' ',e.last_name) AS 'employee_name',
 CONCAT(m.first_name,' ', m.last_name) AS 'manager_name',
 d.name AS 'department_name'
+FROM employees AS e
+JOIN employees AS m
+ON e.manager_id = m.employee_id
+JOIN departments AS d
+ON e.department_id= d.department_id
+ORDER BY e.employee_id
+LIMIT 5;
+
+
+-- 11. Min Average Salary
+-- Write a query that returns the value of the lowest average salary of all departments.
+
+SELECT AVG(salary) 'min_average_salary'
+FROM employees 
+GROUP BY department_id
+ORDER BY min_average_salary
+LIMIT 1;
+
+
+-- 12. Highest Peaks in Bulgaria
+-- Write a query that selects:
+-- · country_code
+-- · mountain_range
+-- · peak_name
+-- · elevation
+-- Filter all peaks in Bulgaria with elevation over 2835.
+--  Return all rows sorted by elevation in descending order
+
+SELECT mc.country_code,
+m.mountain_range,
+p.peak_name,
+p.elevation
+FROM mountains_countries AS mc
+JOIN mountains AS m
+ON mc.mountain_id= m.id
+JOIN peaks AS p
+ON p.mountain_id=mc.mountain_id
+WHERE p.elevation>2835 AND mc.country_code = (SELECT country_code
+FROM countries
+WHERE country_name IN ('Bulgaria'))
+ORDER BY p.elevation DESC;
+
+
+-- 13. Count Mountain Ranges
+-- Write a query that selects:
+-- · country_code
+-- · mountain_range
+-- Filter the count of the mountain ranges in the United States, Russia and Bulgaria.
+--  Sort result by mountain_range count in decreasing order.
+
+SELECT mc.country_code, COUNT(*) AS `mountain_range`
+FROM mountains_countries AS mc
+WHERE mc.country_code IN ('BG', 'RU','ÚS') 
+GROUP BY mc.country_code
+ORDER BY `mountain_range` DESC;
+
+-- 14. Countries with Rivers
+-- Write a query that selects:
+-- · country_name
+-- · river_name
+-- Find the first 5 countries with or without rivers in Africa. Sort them by country_name in ascending order.
+
+SELECT c.country_name,
+r.river_name
+FROM countries AS c
+ LEFT JOIN countries_rivers AS cr
+ON c.country_code=cr.country_code
+LEFT JOIN rivers AS r
+ON cr.river_id=r.id
+ LEFT JOIN continents AS cont
+ ON c.continent_code=cont.continent_code
+WHERE cont.continent_name IN ('Africa')  
+ORDER BY c.country_name
+LIMIT 5;
+
 
 
