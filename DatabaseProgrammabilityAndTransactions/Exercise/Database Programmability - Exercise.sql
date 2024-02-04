@@ -121,3 +121,17 @@ ORDER BY first_name DESC, last_name DESC;
 END $
 
 CALL usp_get_employees_by_salary_level('High');
+
+
+-- 7. Define Function
+-- Define a function ufn_is_word_comprised(set_of_letters varchar(50), word varchar(50)) that returns 1 or 0
+--  depending on that if the word is a comprised of the given set of letters.
+
+DELIMITER $
+
+CREATE FUNCTION ufn_is_word_comprised(set_of_letters VARCHAR(50), word VARCHAR(50))
+RETURNS TINYINT
+DETERMINISTIC 
+BEGIN
+    RETURN word REGEXP CONCAT('^[',set_of_letters,']+$');
+END $
