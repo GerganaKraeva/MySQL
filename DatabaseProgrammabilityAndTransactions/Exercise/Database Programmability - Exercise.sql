@@ -150,3 +150,157 @@ BEGIN
 SELECT CONCAT(first_name,' ', last_name) AS `full_name` FROM account_holders
 ORDER BY `full_name` ASC,id;
 END $
+
+
+-- 9. People with Balance Higher Than
+-- Your task is to create a stored procedure usp_get_holders_with_balance_higher_than that accepts a 
+-- number as a parameter and returns all people who have more money in total of all their accounts than the 
+-- supplied number. The result should be sorted by account_holders.id ascending. 
+
+DELIMITER $
+
+CREATE PROCEDURE usp_get_holders_with_balance_higher_than(number DECIMAL(10,2))
+BEGIN
+SELECT ah.first_name, ah.last_name FROM account_holders AS ah
+JOIN accounts AS a ON a.account_holder_id=ah.id
+WHERE number < (SELECT
+SUM(balance) FROM accounts
+WHERE ah.id=account_holder_id)
+GROUP BY ah.id
+ORDER BY ah.id;
+END $
+
+DELIMITER $
+
+CREATE PROCEDURE usp_get_holders_with_balance_higher_than(number DECIMAL(10,2))
+BEGIN
+SELECT ah.first_name, ah.last_name FROM account_holders AS ah
+JOIN accounts AS a ON a.account_holder_id=ah.id
+GROUP BY ah.id
+HAVING SUM(a.balance) > number
+ORDER BY ah.id;
+END $
+
+
+-- 10. Future Value Function
+-- Your task is to create a function ufn_calculate_future_value that accepts as parameters – sum 
+-- (with precision, 4 digits after the decimal point), yearly interest rate (double) and number of years(int).
+--  It should calculate and return the future value of the initial sum. The result from the function must be decimal, 
+--  with percision 4.
+
+DELIMITER $
+
+CREATE FUNCTION ufn_calculate_future_value(sum DECIMAL(10,4), yearly_interest_rate DOUBLE, years INT) RETURNS DECIMAL(10,4)
+DETERMINISTIC
+BEGIN
+DECLARE result DECIMAL(10,4);
+SET result= sum*POWER((1+yearly_interest_rate),years);
+RETURN result;
+END $
+
+SELECT  ufn_calculate_future_value(1000,0.5,5);
+
+-- 11. Calculating Interest
+-- Your task is to create a stored procedure usp_calculate_future_value_for_account that accepts as parameters –
+--  id of account and interest rate. The procedure uses the function from the previous problem to give an interest 
+--  to a person's account for 5 years, along with information about his/her account id, first name, last name and 
+--  current balance as it is shown in the example below. It should take the account_id and the interest_rate as parameters.
+--  Interest rate should have precision up to 0.0001, same as the calculated balance after 5 years. Be extremely careful 
+--  to achieve the desired precision!
+
+DELIMITER $
+CREATE FUNCTION ufn_calculate_future_value(initial_sum DECIMAL(19,4), yearly_interest_rate Decimal(19,5), years INT) RETURNS DECIMAL(10,4)
+DETERMINISTIC
+BEGIN
+DECLARE result DECIMAL(10,4);
+SET result= initial_sum*POWER((1+yearly_interest_rate),years);
+RETURN result;
+END $
+
+CREATE PROCEDURE usp_calculate_future_value_for_account(user_id INT , user_interest_rate DECIMAL(10,4))
+BEGIN
+SELECT a.id AS 'account_id', 
+ah.first_name, ah.last_name, 
+a.balance AS 'current_balance',
+ufn_calculate_future_value(a.balance, user_interest_rate, 5) AS 'balance_in_5_years'
+FROM accounts AS a
+JOIN account_holders AS ah
+ON a.account_holder_id=ah.id
+WHERE user_id=a.id;
+END  $
+
+DELIMITER ;
+CALL usp_calculate_future_value_for_account(2,0.1);
+
+-- 12. Deposit Money
+-- Add stored procedure usp_deposit_money(account_id, money_amount) that operate in transactions. Follow us:
+-- Make sure to guarantee valid positive money_amount with precision up to fourth sign after decimal point.
+--  The procedure should produce exact results working with the specified precision.
+
+DELIMITER $
+
+CREATE PROCEDURE usp_deposit_money(account_id INT, money_amount DECIMAL(10,4))
+BEGIN
+    START TRANSACTION;
+    IF((select COUNT(*) FROM accounts 
+        WHERE id=account_id ) <> 1 OR money_amount <0 ) THEN
+    ROLLBACK;
+    ELSE
+       UPDATE accounts SET balance = balance + money_amount WHERE id=account_id;
+       COMMIT;
+    END IF;
+END $
+
+DELIMITER ;
+CALL usp_deposit_money(1,10);
+
+-- 13. Withdraw Money
+-- Add stored procedures usp_withdraw_money(account_id, money_amount) that operate in transactions.
+-- Make sure to guarantee withdraw is done only when balance is enough and money_amount is valid positive number.
+--  Work with precision up to fourth sign after decimal point. The procedure should produce exact results working
+--  with the specified precision.
+
+DELIMITER $
+
+CREATE PROCEDURE usp_withdraw_money(account_id INT, money_amount DECIMAL(19,4))
+BEGIN
+    START TRANSACTION;
+    IF(((SELECT COUNT(*) FROM accounts 
+        WHERE id=account_id ) <> 1) OR
+        ((SELECT balance FROM accounts WHERE id=account_id ) < money_amount) OR 
+        money_amount < 0 ) THEN
+    ROLLBACK;
+    ELSE
+       UPDATE accounts SET balance = balance - money_amount WHERE id=account_id;
+       COMMIT;
+    END IF;
+END $
+
+-- 14. Money Transfer
+-- Write stored procedure usp_transfer_money(from_account_id, to_account_id, amount) that transfers money from one account to another.
+--  Consider cases when one of the account_ids is not valid, the amount of money is negative number, 
+--  outgoing balance is enough or transferring from/to one and the same account. Make sure that the whole procedure passes
+--  without errors and if error occurs make no change in the database.
+-- Make sure to guarantee exact results working with precision up to fourth sign after decimal point.
+
+DELIMITER $
+
+CREATE PROCEDURE usp_transfer_money(from_account_id DECIMAL(19,4), to_account_id DECIMAL(19.4), amount DECIMAL(19,4))
+BEGIN
+START TRANSACTION;
+IF (((SELECT COUNT(*) FROM accounts WHERE id=from_account_id) <> 1) OR
+   ((SELECT balance FROM accounts WHERE id=from_account_id ) < amount) OR
+   (( SELECT COUNT(*) FROM accounts WHERE id=to_account_id) <> 1) OR 
+   (from_account_id=to_account_id) OR
+   (amount < 0)) THEN 
+   ROLLBACK;
+ELSE  
+       UPDATE accounts SET balance = balance - amount WHERE id=from_account_id;
+	UPDATE accounts 
+SET 
+    balance = balance + amount
+WHERE
+    id = to_account_id;
+       COMMIT;
+END IF;
+END $
